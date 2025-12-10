@@ -1,21 +1,18 @@
 from cryptography.fernet import Fernet
 import os
-from flask import Flask, Response
 
-app = Flask(__name__)
+def main():
+    key = os.environ.get("FERNET_KEY")
+    ciphertext = os.environ.get("SECRET_CIPHERTEXT")
 
-FERNET_KEY = os.environ.get("FERNET_KEY")
-SECRET_CIPHERTEXT = os.environ.get("SECRET_CIPHERTEXT")
+    if not key or not ciphertext:
+        print("ERROR: faltan variables de entorno.")
+        return
 
-if not FERNET_KEY or not SECRET_CIPHERTEXT:
-    raise ValueError("Faltan variables de entorno")
+    f = Fernet(key.encode())
+    secret = f.decrypt(ciphertext.encode()).decode()
 
-fernet = Fernet(FERNET_KEY.encode())
-secret = fernet.decrypt(SECRET_CIPHERTEXT.encode()).decode()
-
-@app.route("/")
-def index():
-    return Response(f"Hola nrj0005, tu secreto es: {secret}", mimetype="text/plain")
+    print(f"Hola nrj0005, tu secreto es: {secret}")
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8000)
+    main()
