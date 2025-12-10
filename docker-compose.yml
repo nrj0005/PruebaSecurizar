@@ -1,0 +1,22 @@
+version: "3.9"
+
+services:
+  app:
+    build: ./app
+    container_name: app
+    environment:
+      - FERNET_KEY=${FERNET_KEY}
+      - SECRET_CIPHERTEXT=${SECRET_CIPHERTEXT}
+    expose:
+      - "8000"
+
+  nginx:
+    image: nginx:alpine
+    container_name: nginx
+    ports:
+      - "8080:80"
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./htpasswd:/etc/nginx/.htpasswd:ro
+    depends_on:
+      - app
